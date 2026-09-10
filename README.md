@@ -91,10 +91,18 @@ I am going to use the required technologies like this:
 
 For this deliverable I did the following.
 
-- [x] I completed the prerequisites for this deliverable (Git commit requirement)
-- [x] Proper use of Markdown
-- [x] A concise and compelling elevator pitch
-- [x] Description of key features
-- [x] Description of how you will use each technology
-- [x] One or more rough sketches of your application. Images must be embedded in
-      this file using Markdown image references.
+- [x] **Prerequisites** - Created a public startup repository with an MIT license and
+      committed my README and design image to it.
+- [x] **Proper use of Markdown** - Used headers, nested bullet lists, bold, inline code
+      for my endpoints, links, an embedded image, and a task list.
+- [x] **Elevator pitch** - One paragraph on the parking-lot problem and how a shared
+      join code plus private voting solves it.
+- [x] **Key features** - Nine features covering login, group join codes, the shared
+      restaurant list, private voting, live friend progress, automatic advance to
+      results, and ranked results. Stretch ideas are listed separately under Future
+      features.
+- [x] **How I will use each technology** - A paragraph each for HTML, CSS, React,
+      Service, Database, and WebSocket, including my eight backend endpoints and the
+      Overpass API I will call for nearby restaurants.
+- [x] **Rough sketches** - Embedded Sketches.png, four hand-drawn wireframes for the
+      login/register, start-or-join, rater, and results views.
