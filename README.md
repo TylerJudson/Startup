@@ -106,3 +106,18 @@ For this deliverable I did the following.
       Overpass API I will call for nearby restaurants.
 - [x] **Rough sketches** - Embedded Sketches.png, four hand-drawn wireframes for the
       login/register, start-or-join, rater, and results views.
+
+## AWS Deliverable
+
+For this deliverable I did the following.
+
+- [x] **Rented an EC2 server** - Launched a t3.nano in us-east-1 from the class AMI
+      and gave it the elastic IP 3.93.126.221 so the address does not change on
+      reboot.
+- [x] **Leased a domain name** - Registered biteclub.click through Route 53 and made
+      two A records, the root and a `*` wildcard, so every subdomain goes to the
+      same server.
+- [x] **Server is available from my hostname** -
+      [https://startup.biteclub.click](https://startup.biteclub.click). I swapped
+      `:80` for my domain in the Caddyfile. You have to drop the colon, and then
+      Caddy serves on 443 and goes and gets its own Let's Encrypt certificate.
