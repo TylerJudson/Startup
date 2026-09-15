@@ -1,0 +1,90 @@
+<!DOCTYPE html> 
+
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <title>Bite Club - Results</title>
+        <!-- <link rel="icon" href="favicon.ico" /> WILL NEED TO ADD ICON -->
+    </head>
+    
+    <body>
+        <header>
+            <h1>Bite Club</h1>
+            
+            <nav>
+                <menu>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="start.html">Start</a></li>
+                    <li><a href="waiting.html">Waiting</a></li>
+                    <li><a href="vote.html">Vote</a></li>
+                    <li><a href="results.html">Results</a></li>
+                </menu>
+            </nav>
+            
+            <hr />
+        </header>
+        
+        <main>
+            <div>
+                <h2>Winner: Tucanos</h2>
+                <span>4/4 votes</span>
+                <button>Directions</button>
+            </div>
+            
+
+            <div>
+                <!-- VOTE TOTALS READ FROM DB-->
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Restaurant</th>
+                            <th>Cuisine</th>
+                            <th>Votes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Tucanos</td>
+                            <td>brazilian</td>
+                            <td>4</td>
+                        </tr>
+                        <tr>
+                            <td>Cubby's</td>
+                            <td>american</td>
+                            <td>3</td>
+                        </tr>
+                        <tr>
+                            <td>Black Sheep Cafe</td>
+                            <td>southwest</td>
+                            <td>2</td>
+                        </tr>
+                        <tr>
+                            <td>India Palace</td>
+                            <td>indian</td>
+                            <td>2</td>
+                        </tr>
+                        <tr>
+                            <td>Station 22</td>
+                            <td>american</td>
+                            <td>1</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+             <form method="get" action="waiting.html">
+                <button type="submit" >Start a New Round</button>
+            </form>
+        </main>
+        
+        <footer>
+            <hr />
+            <span>Tyler Judson</span>
+            <br />
+            <a href="https://github.com/TylerJudson/Startup">Github</a>
+        </footer>
+    </body>
+</html>
