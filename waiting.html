@@ -6,7 +6,7 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        <title>Bite Club</title>
+        <title>Bite Club - Waiting Room</title>
         <!-- <link rel="icon" href="favicon.ico" /> WILL NEED TO ADD ICON -->
     </head>
     
@@ -28,19 +28,30 @@
         </header>
         
         <main>
-            <h1>The first rule of Bite Club is that EVERYONE EATS!</h1>
-            <form method="get" action="start.html">
-                <div>
-                    <span>Email</span>
-                    <input type="text" placeholder="your@email.com" />
-                </div>
-                <div>
-                    <span>Password</span>
-                    <input type="password" placeholder="password" />
-                </div>
+            <h3>JOIN CODE: <span>ABCD</span> </h3>
+            <span>Copy the code above and share it with your friends!</span>
 
-                <button type="submit">Login</button>
-                <button type="submit">Create</button>
+
+            <!-- THIS WILL SHOW FOR THE HOST ONLY-->
+            <!-- THE BUTTON WILL AUTO USE THEIR LOCATION WHILE 
+                THE INPUT WILL ALLOW THE USER TO ENTER MANUALLY -->
+            <span><b>Location:</b> not set</span>
+            <button>Use my Location</button>
+            <input type="text" placeholder="Enter Location" >
+
+            <!-- NAMES WILL APPEAR HERE WITH A WEBSOCKET-->
+            <div>
+                <h3>Joined: </h3>
+                <ul>
+                    <li>You</li>
+                    <li>Kate</li>
+                    <li>Conner</li>
+                    <li>Lily</li>
+                </ul>
+            </div>
+
+            <form method="get" action="vote.html">
+                <button>Start Voting</button>
             </form>
         </main>
         
