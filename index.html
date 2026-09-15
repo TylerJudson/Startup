@@ -2,35 +2,52 @@
 
 <html lang="en">
 
-    <head charset="something" viewport="don't know">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
         <title>Bite Club</title>
+        <!-- <link rel="icon" href="favicon.ico" /> WILL NEED TO ADD ICON -->
     </head>
     
-    <header>
-        <h1>Bite Club</h1>
+    <body>
+        <header>
+            <h1>Bite Club</h1>
+            
+            <nav>
+                <menu>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="start.html">Start</a></li>
+                    <li><a href="vote.html">Vote</a></li>
+                    <li><a href="results.html">Results</a></li>
+                </menu>
+            </nav>
+            
+            <hr />
+        </header>
         
-        <nav>
-            <menu>
-                <li><a>index.html</a></li>
-                <li><a>start.html</a></li>
-                <li><a>vote.html</a></li>
-                <li><a>results.html</a></li>
-            </menu>
-        </nav>
+        <main>
+            <h1>The first rule of Bite Club is that EVERYONE EATS!</h1>
+            <form method="get" action="play.html">
+                <div>
+                    <span>Email</span>
+                    <input type="text" placeholder="your@email.com" />
+                </div>
+                <div>
+                    <span>Password</span>
+                    <input type="password" placeholder="password" />
+                </div>
+
+                <button type="submit">Login</button>
+                <button type="submit">Create</button>
+            </form>
+        </main>
         
-        <hr />
-    </header>
-    
-    <main>
-        <form>
-            <input title="Email">
-            <input title="Password">
-        </form>
-    </main>
-    
-    <footer>
-        <hr />
-        Tyler Judson
-        <a>https://github.com/TylerJudson/Startup</a>
-    </footer>
+        <footer>
+            <hr />
+            <span class="test-reset">Tyler Judson</span>
+            <br />
+            <a href="https://github.com/TylerJudson/Startup">Github</a>
+        </footer>
+    </body>
 </html>
