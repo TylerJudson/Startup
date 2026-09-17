@@ -134,7 +134,8 @@ For this deliverable I did the following.
 - [x] **Proper use of HTML tags** - Every page uses `header`, `nav`, `main`, and
       `footer`. The nav is a `menu` with `li` items instead of a plain pile of
       links, and the results table uses `thead` and `tbody` so the header row is
-      actually marked as a header row.
+      actually marked as a header row. Every input has a `label` tied to it with
+      `for` and `id`, so a screen reader can say which field you are in.
 - [x] **Links between pages** - The same five link nav sits in the header of every
       page. The forms also move you through the flow, so login goes to
       `start.html`, both group forms go to `waiting.html`, the waiting room goes to
@@ -147,9 +148,9 @@ For this deliverable I did the following.
 - [x] **Placeholder for 3rd party service calls** - The restaurant card in
       `vote.html` is marked with a comment for where the data comes from. The plan
       is to pull restaurants from Overpass, which is the OpenStreetMap API, using
-      the group's coordinates. `waiting.html` has the location block where the
-      browser geolocation call will go, with a manual entry box as the backup for
-      when somebody denies location access.
+      the group's coordinates. The location block in `waiting.html` is where those
+      coordinates get collected, with a manual entry box as the backup for when
+      somebody denies location access.
 - [x] **Application images** - The cookie logo is on the login page and it is also
       the favicon on every page. The vote card has a photo of the restaurant being
       voted on and the results page has a photo of the winner. All three have alt
