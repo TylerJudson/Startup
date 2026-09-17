@@ -121,3 +121,47 @@ For this deliverable I did the following.
       [https://startup.biteclub.click](https://startup.biteclub.click). I swapped
       `:80` for my domain in the Caddyfile. You have to drop the colon, and then
       Caddy serves on 443 and goes and gets its own Let's Encrypt certificate.
+
+## HTML Deliverable
+
+For this deliverable I did the following.
+
+- [x] **HTML pages for each component** - Made five pages, one for each step of the
+      flow. `index.html` is the login, `start.html` is where you start a group or
+      join one, `waiting.html` is the waiting room that holds everybody until the
+      host starts, `vote.html` is the yes or no voting, and `results.html` is the
+      winner and the totals.
+- [x] **Proper use of HTML tags** - Every page uses `header`, `nav`, `main`, and
+      `footer`. The nav is a `menu` with `li` items instead of a plain pile of
+      links, and the results table uses `thead` and `tbody` so the header row is
+      actually marked as a header row.
+- [x] **Links between pages** - The same five link nav sits in the header of every
+      page. The forms also move you through the flow, so login goes to
+      `start.html`, both group forms go to `waiting.html`, the waiting room goes to
+      `vote.html`, voting goes to `results.html`, and the new round button goes back
+      to `waiting.html`.
+- [x] **Application textual content** - Wrote the pitch on the login page so that
+      somebody landing there knows what the app is for, and a line under each of
+      Start a Group and Join a Group so you know which one applies to you. The vote
+      card and the results table carry the restaurant content.
+- [x] **Placeholder for 3rd party service calls** - The restaurant card in
+      `vote.html` is marked with a comment for where the data comes from. The plan
+      is to pull restaurants from Overpass, which is the OpenStreetMap API, using
+      the group's coordinates. `waiting.html` has the location block where the
+      browser geolocation call will go, with a manual entry box as the backup for
+      when somebody denies location access.
+- [x] **Application images** - The cookie logo is on the login page and it is also
+      the favicon on every page. The vote card has a photo of the restaurant being
+      voted on and the results page has a photo of the winner. All three have alt
+      text that describes what is in the picture.
+- [x] **Login placeholder, including user name display** - `index.html` has the
+      email and password form with a Login and a Create button. After that the
+      logged in user shows in the header of all four of the other pages, which is
+      the `span` right under the comment in the header.
+- [x] **Database data placeholder** - The results page has the vote totals table
+      with every restaurant, its cuisine, and how many yeses it got. That table is
+      what gets read back out of the database later.
+- [x] **WebSocket data placeholder** - Two spots. The waiting room has the list of
+      who has joined, which fills in as people come in, and the vote page has the
+      live progress of everybody else, so you can see that Kate is on 3 of 7 while
+      Conner is already done.
