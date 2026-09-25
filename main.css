@@ -26,3 +26,12 @@ footer {
     padding: 1em; 
     text-align: center; 
 }
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+#logo {
+    width: 150px;
+}
