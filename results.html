@@ -35,18 +35,18 @@
             </nav>
         </header>
         
-        <main>
-            <div>
+        <main class="results">
+            <div class="winner">
                 <h2>Winner: Tucanos</h2>
-                <img src="images/tucanos.jpg" alt="Tucanos - An image of meet being cut on a skewer." />
+                <img id="winner-photo" src="images/tucanos.jpg" alt="Tucanos - An image of meet being cut on a skewer." />
                 <span>4/4 votes</span>
-                <button>Directions</button>
+                <button class="btn btn-primary">Directions</button>
             </div>
             
 
-            <div>
+            <div class="table-responsive">
                 <!-- VOTE TOTALS READ FROM DB-->
-                <table>
+                <table class="table table-striped">
                     <thead>
                         <tr>
                             <th>Restaurant</th>
@@ -85,7 +85,7 @@
             </div>
 
              <form method="get" action="waiting.html">
-                <button type="submit" >Start a New Round</button>
+                <button class="btn btn-outline-secondary" type="submit">Start a New Round</button>
             </form>
         </main>
         
