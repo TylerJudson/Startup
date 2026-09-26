@@ -53,3 +53,18 @@ img {
 .login form {
     text-align: left;
 }
+
+.choices {
+    display: flex;
+    gap: 1.5em;
+    justify-content: center;
+    padding: 2em 1em;
+}
+
+.panel {
+    flex: 1;
+    max-width: 22em;
+    padding: 1.5em;
+    border: 1px solid #ddd;
+    border-radius: 0.75em;
+}
