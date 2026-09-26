@@ -36,23 +36,26 @@
             
         </header>
         
-        <main>
-            <h3>JOIN CODE: <span>ABCD</span> </h3>
-            <span>Copy the code above and share it with your friends!</span>
-
+        <main class="waiting">
+            <div class="code-box">
+                <h3>JOIN CODE: <span id="join-code">ABCD</span></h3>
+                <span>Copy the code above and share it with your friends!</span>
+            </div>
 
             <!-- THIS WILL SHOW FOR THE HOST ONLY-->
             <!-- THE BUTTON WILL AUTO USE THEIR LOCATION WHILE 
                 THE INPUT WILL ALLOW THE USER TO ENTER MANUALLY -->
-            <span><b>Location:</b> not set</span>
-            <button>Use my Location</button>
-            <label for="location">Location</label>
-            <input type="text" id="location" name="location" placeholder="Enter Location" >
+            <div class="host-box">
+                <span><b>Location:</b> not set</span>
+                <button class="btn btn-outline-primary">Use my Location</button>
+                <label for="location">Location</label>
+                <input class="form-control" type="text" id="location" name="location" placeholder="Enter Location" />
+            </div>
 
             <!-- NAMES WILL APPEAR HERE WITH A WEBSOCKET-->
             <div>
                 <h3>Joined: </h3>
-                <ul>
+                <ul class="joined">
                     <li>You</li>
                     <li>Kate</li>
                     <li>Conner</li>
@@ -61,7 +64,7 @@
             </div>
 
             <form method="get" action="vote.html">
-                <button>Start Voting</button>
+                <button class="btn btn-primary btn-lg" type="submit">Start Voting</button>
             </form>
         </main>
         

@@ -68,3 +68,27 @@ img {
     border: 1px solid #ddd;
     border-radius: 0.75em;
 }
+
+.waiting {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1em;
+    padding: 2em 1em;
+    text-align: center;
+}
+
+#join-code {
+    font-weight: bold;
+}
+
+.host-box {
+    width: 100%;
+    max-width: 22em;
+    text-align: left;
+}
+
+.joined {
+    list-style: none;
+    padding: 0;
+}
