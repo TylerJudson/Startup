@@ -92,3 +92,25 @@ img {
     list-style: none;
     padding: 0;
 }
+
+.vote {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1em;
+    padding: 2em 1em;
+}
+
+.vote .card {
+    max-width: 22em;
+}
+
+.card-body span {
+    display: block;
+}
+
+.vote-buttons,
+.status {
+    display: flex;
+    gap: 1em;
+}
