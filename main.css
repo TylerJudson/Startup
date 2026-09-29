@@ -172,3 +172,25 @@ header a:hover {
 footer a {
     color: #a86c26;
 }
+
+/* Phone-width layout */
+@media (max-width: 600px) {
+    header {
+        flex-direction: column;
+        gap: 0.5em;
+    }
+
+    menu {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .choices {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .panel {
+        width: 100%;
+    }
+}
