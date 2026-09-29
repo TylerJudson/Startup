@@ -166,3 +166,27 @@ For this deliverable I did the following.
       who has joined, which fills in as people come in, and the vote page has the
       live progress of everybody else, so you can see that Kate is on 3 of 7 while
       Conner is already done.
+
+## CSS Deliverable
+
+For this deliverable I did the following.
+
+- [x] **Visually appealing colors and layout. No overflowing elements** - Pulled the
+      colors from the cookie logo, a dark brown header, tan buttons, and an off white
+      background. Every image has max-width 100% so nothing runs off the screen, and
+      the results table sits in a table-responsive wrapper so it scrolls in its own
+      box on a phone instead of making the page wider.
+- [x] **Use of a CSS framework** - Bootstrap 5.2.2 is linked on every page. The
+      buttons use btn classes, the inputs use form-control, the vote page restaurant
+      is a Bootstrap card, and the vote totals are a table-striped table.
+- [x] **All visual elements styled using CSS** - One shared main.css styles the
+      header, nav, footer, and each page. I took out the hr tags and drew those lines
+      with CSS borders instead.
+- [x] **Responsive to window resizing** - Every page is laid out with flexbox. The
+      header is a flex row that turns into a column under 600px, the nav wraps, and
+      the two Start and Join panels sit side by side on a laptop and stack on a phone.
+      I checked all five pages at 390px wide and nothing overflows.
+- [x] **Use of an imported font** - Open Sans from Google Fonts, set on the body.
+- [x] **Use of different types of selectors** - Element (body, header, img), class
+      (.login, .panel, .choices), ID (#logo, #join-code, #winner-photo), and pseudo
+      (header a:hover and .btn-primary:hover).
