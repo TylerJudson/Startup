@@ -1,5 +1,7 @@
 body {
     font-family: 'Open Sans', sans-serif;
+    background-color: #fdf8f1;
+    color: #3b2a1a;
 }
 
 header {
@@ -7,6 +9,9 @@ header {
     align-items: center;
     justify-content: space-between;
     padding: 0.5em 1em;
+    border-bottom: 1px solid #ddd;
+    background-color: #5a3a1e;
+    color: #fdf8f1;
 }
 
 menu {
@@ -17,14 +22,10 @@ menu {
     padding: 0;
 }
 
-header {
-    border-bottom: 1px solid #ddd; 
-}
-
-footer { 
-    border-top: 1px solid #ddd; 
-    padding: 1em; 
-    text-align: center; 
+footer {
+    border-top: 1px solid #ddd;
+    padding: 1em;
+    text-align: center;
 }
 
 img {
@@ -137,16 +138,6 @@ img {
 .results .table-responsive {
     width: 100%;
     max-width: 30em;
-}
-
-body {
-    background-color: #fdf8f1;
-    color: #3b2a1a;
-}
-
-header {
-    background-color: #5a3a1e;
-    color: #fdf8f1;
 }
 
 header a {
