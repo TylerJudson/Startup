@@ -27,3 +27,6 @@
 - commits are graded on this one. rubric says dozens across multiple days + can reject
   the submission. commit each change instead of batching. stage the image in the SAME
   commit as the page that uses it
+
+- bootstrap table-responsive wrapper = table scrolls inside its own box instead of making the whole page wide
+
