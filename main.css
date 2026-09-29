@@ -138,3 +138,37 @@ img {
     width: 100%;
     max-width: 30em;
 }
+
+body {
+    background-color: #fdf8f1;
+    color: #3b2a1a;
+}
+
+header {
+    background-color: #5a3a1e;
+    color: #fdf8f1;
+}
+
+header a {
+    color: #f3c77b;
+    text-decoration: none;
+}
+
+header a:hover {
+    color: #ffffff;
+    text-decoration: underline;
+}
+
+.btn-primary {
+    background-color: #c8873a;
+    border-color: #c8873a;
+}
+
+.btn-primary:hover {
+    background-color: #a86c26;
+    border-color: #a86c26;
+}
+
+footer a {
+    color: #a86c26;
+}
