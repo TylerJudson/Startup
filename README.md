@@ -190,3 +190,21 @@ For this deliverable I did the following.
 - [x] **Use of different types of selectors** - Element (body, header, img), class
       (.login, .panel, .choices), ID (#logo, #join-code, #winner-photo), and pseudo
       (header a:hover and .btn-primary:hover).
+
+## React part1
+
+For this deliverable I did the following.
+
+- [x] **Bundled using Vite** - Installed Vite, React, React Router, and Bootstrap with
+      npm. Moved the images and favicon into public/, the CSS into src/app.css, and
+      index.html is now just the root div plus index.jsx. npm run dev runs it locally
+      and deployReact.sh builds it with vite build and deploys the dist folder.
+- [x] **Multiple React components that contain your HTML and CSS** - Each of my five
+      pages is its own component: Login, Start, Waiting, Vote, and Results, each in its
+      own folder under src/. I moved each page's main into its component and switched
+      class to className and for to htmlFor. The header and footer live in app.jsx, and
+      app.css plus Bootstrap are imported there so every page keeps the same styling.
+- [x] **React router** - app.jsx wraps everything in a BrowserRouter. The nav menu uses
+      NavLinks, and Routes map / to Login, /start, /waiting, /vote, and /results to
+      their components, with a 404 page for anything else. The form buttons go to the
+      next route the same way the old html pages linked to each other.
