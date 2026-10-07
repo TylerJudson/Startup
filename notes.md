@@ -30,3 +30,4 @@
 
 - bootstrap table-responsive wrapper = table scrolls inside its own box instead of making the whole page wide
 
+- vite layout: index.html at root w/ just div id=root + script index.jsx. images go in public/ (served as is so /images/logo.png). code + css in src/
