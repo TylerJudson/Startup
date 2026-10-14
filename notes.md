@@ -1,5 +1,7 @@
 # notes
 
+## I love web programming
+
 ## html deliverable
 
 - bad img src fails SILENTLY. no error no console nothing, just the broken icon.
