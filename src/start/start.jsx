@@ -1,27 +1,52 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export function Start() {
-  return (
-    <main className="choices">
-      <form className="panel" method="get" action="/waiting">
-        <h2>Start a Group</h2>
+    const [joinCode, setJoinCode] = React.useState('');
+    const navigate = useNavigate();
 
-        <p>You are the host. You set the location, and you start the voting
-          once everybody has joined.</p>
+    // This will be replaced with a call to the service to create a group
+    function startGroup(e) {
+        e.preventDefault();
+        const letters = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+        let code = '';
+        for (let i = 0; i < 4; i++) {
+            code += letters[Math.floor(Math.random() * letters.length)];
+        }
+        localStorage.setItem('groupCode', code);
+        localStorage.setItem('isHost', 'true');
+        navigate('/waiting');
+    }
 
-        <button className="btn btn-primary" type="submit">Start</button>
-      </form>
+    // This will be replaced with a call to the service to join a group
+    function joinGroup(e) {
+        e.preventDefault();
+        localStorage.setItem('groupCode', joinCode);
+        localStorage.setItem('isHost', 'false');
+        navigate('/waiting');
+    }
 
-      <form className="panel" method="get" action="/waiting">
-        <h2>Join a Group</h2>
+    return (
+        <main className="choices">
+            <form className="panel" onSubmit={startGroup}>
+                <h2>Start a Group</h2>
 
-        <p>Get the code from whoever started the group and type it in. You get
-          the exact same restaurant list as everyone else.</p>
+                <p>You are the host. You set the location, and you start the voting
+                    once everybody has joined.</p>
 
-        <label htmlFor="joincode">Join code</label>
-        <input className="form-control mb-2" type="text" id="joincode" name="joincode" placeholder="JOIN CODE" />
-        <button className="btn btn-secondary" type="submit">Submit</button>
-      </form>
-    </main>
-  );
+                <button className="btn btn-primary" type="submit">Start</button>
+            </form>
+
+            <form className="panel" onSubmit={joinGroup}>
+                <h2>Join a Group</h2>
+
+                <p>Get the code from whoever started the group and type it in. You get
+                    the exact same restaurant list as everyone else.</p>
+
+                <label htmlFor="joincode">Join code</label>
+                <input className="form-control mb-2" type="text" id="joincode" maxLength={4} value={joinCode} onChange={(e) => setJoinCode(e.target.value.toUpperCase())} placeholder="JOIN CODE" />
+                <button className="btn btn-secondary" type="submit" disabled={joinCode.length !== 4}>Submit</button>
+            </form>
+        </main>
+    );
 }
