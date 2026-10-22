@@ -33,3 +33,13 @@
 - bootstrap table-responsive wrapper = table scrolls inside its own box instead of making the whole page wide
 
 - vite layout: index.html at root w/ just div id=root + script index.jsx. images go in public/ (served as is so /images/logo.png). code + css in src/
+
+## react p2
+- useState = value + setter, setting it re-renders. controlled input = value={x} onChange={e => setX(e.target.value)}
+- useEffect(fn, []) runs once on load. return a function to clean up (clearInterval) or the timer keeps going after you leave the page
+- useEffect(fn, [a, b]) reruns when a or b change. used it to jump to results when everyone is done
+- setInterval inside useEffect = fake websocket for now
+- setX(old => ...) when the new value depends on the old one, inside a timer the normal value is stale
+- localStorage only holds strings so JSON.stringify / JSON.parse for arrays
+- useNavigate() to change pages from code instead of a link
+- {cond && <x/>} and {cond ? <a/> : <b/>} for showing stuff conditionally. list.map needs a key
