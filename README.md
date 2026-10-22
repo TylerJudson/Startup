@@ -208,3 +208,23 @@ For this deliverable I did the following.
       NavLinks, and Routes map / to Login, /start, /waiting, /vote, and /results to
       their components, with a 404 page for anything else. The form buttons go to the
       next route the same way the old html pages linked to each other.
+
+## React part 2
+
+For this deliverable I did the following.
+
+- [x] **All functionality implemented or mocked out** - You can now go through the
+      whole app. Login saves your email to localStorage and shows your name with a
+      logout button. Start makes a random 4 letter group code or lets you join one.
+      Waiting shows the code, lets the host set a location, and fake friends join
+      every couple seconds. Vote steps through a list of restaurants and counts your
+      yes votes, and your friends' progress updates live. When everyone is done you
+      go to Results, which totals the votes and picks the winner with a Directions
+      button. The restaurant list is hard coded (later a 3rd party API), friends
+      joining and voting use setInterval (later WebSocket), and login and votes use
+      localStorage (later the service and database).
+- [x] **Hooks** - useState for the login inputs, the logged in user, the join code,
+      the location, the joined list, which restaurant you are on, your votes, and
+      your friends' progress. useEffect runs the setInterval timers on the waiting
+      and vote pages (and clears them when you leave), and watches for everyone to
+      be done voting so it can jump to the results.
