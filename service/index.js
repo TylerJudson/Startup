@@ -1,28 +1,120 @@
+const cookieParser = require('cookie-parser');
+const bcrypt = require('bcryptjs');
 const express = require('express');
+const uuid = require('uuid');
 const app = express();
 
-// The service port. In production the frontend code is statically hosted by the service on the same port.
+const authCookieName = 'token';
+
+// USERS ARE IN MEMORY FOR NOW, WILL MOVE TO THE DB
+let users = [];
+
+// HAS TO BE PORT 4000 FOR THE STARTUP
 const port = process.argv.length > 2 ? process.argv[2] : 4000;
 
-// JSON body parsing using built-in middleware
 app.use(express.json());
 
-// Serve up the frontend static content hosting
+app.use(cookieParser());
+
+// SERVES THE REACT BUILD
 app.use(express.static('public'));
 
-// Router for service endpoints
 const apiRouter = express.Router();
 app.use(`/api`, apiRouter);
 
-// Simple endpoint to check that the service is up
+// JUST TO CHECK THE SERVICE IS UP
 apiRouter.get('/health', (_req, res) => {
     res.send({ status: 'ok' });
 });
 
-// Return the application's default page if the path is unknown
+// REGISTER
+apiRouter.post('/auth/create', async (req, res) => {
+    if (!req.body.email || !req.body.password) {
+        res.status(400).send({ msg: 'Missing email or password' });
+    } else if (await findUser('email', req.body.email)) {
+        res.status(409).send({ msg: 'Existing user' });
+    } else {
+        const user = await createUser(req.body.email, req.body.password);
+
+        setAuthCookie(res, user.token);
+        res.send({ email: user.email });
+    }
+});
+
+// LOGIN
+apiRouter.put('/auth/login', async (req, res) => {
+    const user = await findUser('email', req.body.email);
+    if (user && (await bcrypt.compare(req.body.password, user.password))) {
+        user.token = uuid.v4();
+        setAuthCookie(res, user.token);
+        res.send({ email: user.email });
+        return;
+    }
+    res.status(401).send({ msg: 'Unauthorized' });
+});
+
+// LOGOUT
+apiRouter.delete('/auth/logout', async (req, res) => {
+    const user = await findUser('token', req.cookies[authCookieName]);
+    if (user) {
+        delete user.token;
+    }
+    res.clearCookie(authCookieName);
+    res.status(204).end();
+});
+
+// BLOCKS ANYONE WITHOUT A VALID TOKEN
+const verifyAuth = async (req, res, next) => {
+    const user = await findUser('token', req.cookies[authCookieName]);
+    if (user) {
+        req.user = user;
+        next();
+    } else {
+        res.status(401).send({ msg: 'Unauthorized' });
+    }
+};
+
+// NEEDS YOU TO BE LOGGED IN
+apiRouter.get('/user/me', verifyAuth, (req, res) => {
+    res.send({ email: req.user.email });
+});
+
+app.use(function (err, req, res, next) {
+    res.status(500).send({ type: err.name, message: err.message });
+});
+
+// ANY OTHER PATH GETS THE REACT APP SO THE ROUTER WORKS
 app.use((_req, res) => {
     res.sendFile('index.html', { root: 'public' });
 });
+
+async function createUser(email, password) {
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    const user = {
+        email: email,
+        password: passwordHash,
+        token: uuid.v4(),
+    };
+    users.push(user);
+
+    return user;
+}
+
+async function findUser(field, value) {
+    if (!value) return null;
+
+    return users.find((u) => u[field] === value);
+}
+
+// HTTPONLY SO JAVASCRIPT CANT READ THE TOKEN
+function setAuthCookie(res, authToken) {
+    res.cookie(authCookieName, authToken, {
+        secure: true,
+        httpOnly: true,
+        sameSite: 'strict',
+    });
+}
 
 app.listen(port, () => {
     console.log(`Listening on port ${port}`);
