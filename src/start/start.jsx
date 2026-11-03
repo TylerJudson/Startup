@@ -3,26 +3,37 @@ import { useNavigate } from 'react-router-dom';
 
 export function Start() {
     const [joinCode, setJoinCode] = React.useState('');
+    const [error, setError] = React.useState('');
     const navigate = useNavigate();
 
-    // This will be replaced with a call to the service to create a group
-    function startGroup(e) {
+    // THE SERVICE MAKES THE CODE NOW
+    async function startGroup(e) {
         e.preventDefault();
-        const letters = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
-        let code = '';
-        for (let i = 0; i < 4; i++) {
-            code += letters[Math.floor(Math.random() * letters.length)];
+        const response = await fetch('/api/group', { method: 'POST' });
+        if (response.ok) {
+            const group = await response.json();
+            goToWaiting(group.code, true);
+        } else {
+            const body = await response.json();
+            setError(body.msg);
         }
-        localStorage.setItem('groupCode', code);
-        localStorage.setItem('isHost', 'true');
-        navigate('/waiting');
     }
 
-    // This will be replaced with a call to the service to join a group
-    function joinGroup(e) {
+    async function joinGroup(e) {
         e.preventDefault();
-        localStorage.setItem('groupCode', joinCode);
-        localStorage.setItem('isHost', 'false');
+        const response = await fetch(`/api/group/${joinCode}/join`, { method: 'POST' });
+        if (response.ok) {
+            goToWaiting(joinCode, false);
+        } else {
+            const body = await response.json();
+            setError(body.msg);
+        }
+    }
+
+    function goToWaiting(code, isHost) {
+        localStorage.setItem('groupCode', code);
+        localStorage.setItem('isHost', isHost ? 'true' : 'false');
+        localStorage.removeItem('location');
         navigate('/waiting');
     }
 
@@ -47,6 +58,8 @@ export function Start() {
                 <input className="form-control mb-2" type="text" id="joincode" maxLength={4} value={joinCode} onChange={(e) => setJoinCode(e.target.value.toUpperCase())} placeholder="JOIN CODE" />
                 <button className="btn btn-secondary" type="submit" disabled={joinCode.length !== 4}>Submit</button>
             </form>
+
+            {error && <p className="text-danger">{error}</p>}
         </main>
     );
 }

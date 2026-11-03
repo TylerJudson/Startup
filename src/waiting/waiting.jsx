@@ -4,41 +4,80 @@ import { useNavigate } from 'react-router-dom';
 export function Waiting() {
     const groupCode = localStorage.getItem('groupCode') || '????';
     const isHost = localStorage.getItem('isHost') === 'true';
+    const userName = localStorage.getItem('userName');
     const [location, setLocation] = React.useState(localStorage.getItem('location') || '');
-    const [joined, setJoined] = React.useState(['You']);
+    const [members, setMembers] = React.useState(['You']);
+    const [fakeFriends, setFakeFriends] = React.useState([]);
+    const [error, setError] = React.useState('');
     const navigate = useNavigate();
 
-    // This will be replaced with WebSocket messages when people join
+    const joined = [...members, ...fakeFriends];
+
+    // ASKS THE SERVICE WHO JOINED EVERY 2 SECONDS
+    React.useEffect(() => {
+        async function checkGroup() {
+            const response = await fetch(`/api/group/${groupCode}`);
+            if (!response.ok) {
+                const body = await response.json();
+                setError(body.msg);
+                return;
+            }
+
+            const group = await response.json();
+            const names = group.members.map((email) => (email === userName ? 'You' : email));
+            setMembers(names);
+
+            // THE HOST STARTED SO EVERYONE GOES TO VOTE
+            if (group.started && !isHost) {
+                localStorage.setItem('location', group.location);
+                localStorage.setItem('players', JSON.stringify(names));
+                navigate('/vote');
+            }
+        }
+
+        checkGroup();
+        const timer = setInterval(checkGroup, 2000);
+        return () => clearInterval(timer);
+    }, []);
+
+    // FAKE FRIENDS UNTIL THE WEBSOCKET
     React.useEffect(() => {
         const friends = ['Kate', 'Conner', 'Lily'];
         let i = 0;
         const timer = setInterval(() => {
             if (i < friends.length) {
                 const name = friends[i];
-                setJoined((names) => [...names, name]);
+                setFakeFriends((names) => [...names, name]);
                 i++;
             } else {
                 clearInterval(timer);
-                // Pretend the host started the voting
-                if (!isHost) {
-                    navigate('/vote');
-                }
             }
         }, 2000);
 
         return () => clearInterval(timer);
     }, []);
 
-    // This will be replaced with a call to a location service
+    // WILL USE THE BROWSER LOCATION AND A THIRD PARTY API
     function useMyLocation() {
         setLocation('Provo, UT');
     }
 
-    function startVoting(e) {
+    async function startVoting(e) {
         e.preventDefault();
-        localStorage.setItem('location', location);
-        localStorage.setItem('players', JSON.stringify(joined));
-        navigate('/vote');
+        const response = await fetch(`/api/group/${groupCode}/start`, {
+            method: 'PUT',
+            body: JSON.stringify({ location: location }),
+            headers: { 'Content-Type': 'application/json' },
+        });
+
+        if (response.ok) {
+            localStorage.setItem('location', location);
+            localStorage.setItem('players', JSON.stringify(joined));
+            navigate('/vote');
+        } else {
+            const body = await response.json();
+            setError(body.msg);
+        }
     }
 
     return (
@@ -65,6 +104,8 @@ export function Waiting() {
                     ))}
                 </ul>
             </div>
+
+            {error && <p className="text-danger">{error}</p>}
 
             {isHost ? (
                 <form onSubmit={startVoting}>
