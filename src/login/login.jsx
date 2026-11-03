@@ -4,14 +4,34 @@ import { useNavigate } from 'react-router-dom';
 export function Login({ userName, onLogin }) {
     const [email, setEmail] = React.useState(userName);
     const [password, setPassword] = React.useState('');
+    const [error, setError] = React.useState('');
     const navigate = useNavigate();
 
-    // This will be replaced with a call to the login service
     function login(e) {
         e.preventDefault();
-        localStorage.setItem('userName', email);
-        onLogin(email);
-        navigate('/start');
+        loginOrCreate('/api/auth/login', 'PUT');
+    }
+
+    function create() {
+        loginOrCreate('/api/auth/create', 'POST');
+    }
+
+    // SAME FETCH FOR BOTH, ONLY THE URL AND METHOD CHANGE
+    async function loginOrCreate(url, method) {
+        const response = await fetch(url, {
+            method: method,
+            body: JSON.stringify({ email: email, password: password }),
+            headers: { 'Content-Type': 'application/json' },
+        });
+
+        if (response.ok) {
+            localStorage.setItem('userName', email);
+            onLogin(email);
+            navigate('/start');
+        } else {
+            const body = await response.json();
+            setError(body.msg);
+        }
     }
 
     return (
@@ -42,7 +62,8 @@ export function Login({ userName, onLogin }) {
                     </div>
 
                     <button className="btn btn-primary" type="submit" disabled={!email || !password}>Login</button>
-                    <button className="btn btn-outline-secondary" type="submit" disabled={!email || !password}>Create</button>
+                    <button className="btn btn-outline-secondary" type="button" onClick={create} disabled={!email || !password}>Create</button>
+                    {error && <p className="text-danger">{error}</p>}
                 </form>
             )}
         </main>

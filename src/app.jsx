@@ -11,9 +11,12 @@ import { Results } from './results/results';
 export default function App() {
     const [userName, setUserName] = React.useState(localStorage.getItem('userName') || '');
 
+    // TELLS THE SERVICE TO DELETE THE TOKEN
     function logout() {
-        localStorage.removeItem('userName');
-        setUserName('');
+        fetch('/api/auth/logout', { method: 'DELETE' }).finally(() => {
+            localStorage.removeItem('userName');
+            setUserName('');
+        });
     }
 
     return (
