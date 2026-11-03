@@ -8,6 +8,7 @@ const authCookieName = 'token';
 
 // USERS ARE IN MEMORY FOR NOW, WILL MOVE TO THE DB
 let users = [];
+let groups = {};
 
 // HAS TO BE PORT 4000 FOR THE STARTUP
 const port = process.argv.length > 2 ? process.argv[2] : 4000;
@@ -79,6 +80,60 @@ apiRouter.get('/user/me', verifyAuth, (req, res) => {
     res.send({ email: req.user.email });
 });
 
+// START A GROUP, YOU ARE THE HOST
+apiRouter.post('/group', verifyAuth, (req, res) => {
+    const group = {
+        code: makeCode(),
+        host: req.user.email,
+        members: [req.user.email],
+        location: '',
+        started: false,
+    };
+    groups[group.code] = group;
+    res.send(group);
+});
+
+// JOIN A GROUP WITH THE CODE
+apiRouter.post('/group/:code/join', verifyAuth, (req, res) => {
+    const group = groups[req.params.code];
+    if (!group) {
+        res.status(404).send({ msg: 'No group with that code' });
+    } else if (group.started) {
+        res.status(409).send({ msg: 'That group already started voting' });
+    } else {
+        if (!group.members.includes(req.user.email)) {
+            group.members.push(req.user.email);
+        }
+        res.send(group);
+    }
+});
+
+// THE WAITING PAGE CHECKS THIS FOR WHO JOINED
+apiRouter.get('/group/:code', verifyAuth, (req, res) => {
+    const group = groups[req.params.code];
+    if (group) {
+        res.send(group);
+    } else {
+        res.status(404).send({ msg: 'No group with that code' });
+    }
+});
+
+// ONLY THE HOST CAN START THE VOTING
+apiRouter.put('/group/:code/start', verifyAuth, (req, res) => {
+    const group = groups[req.params.code];
+    if (!group) {
+        res.status(404).send({ msg: 'No group with that code' });
+    } else if (group.host !== req.user.email) {
+        res.status(403).send({ msg: 'Only the host can start' });
+    } else if (!req.body.location) {
+        res.status(400).send({ msg: 'Missing location' });
+    } else {
+        group.location = req.body.location;
+        group.started = true;
+        res.send(group);
+    }
+});
+
 app.use(function (err, req, res, next) {
     res.status(500).send({ type: err.name, message: err.message });
 });
@@ -105,6 +160,19 @@ async function findUser(field, value) {
     if (!value) return null;
 
     return users.find((u) => u[field] === value);
+}
+
+// NO I OR O SO PEOPLE DONT MIX THEM UP WITH 1 AND 0
+function makeCode() {
+    const letters = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+    let code = '';
+    do {
+        code = '';
+        for (let i = 0; i < 4; i++) {
+            code += letters[Math.floor(Math.random() * letters.length)];
+        }
+    } while (groups[code]);
+    return code;
 }
 
 // HTTPONLY SO JAVASCRIPT CANT READ THE TOKEN
