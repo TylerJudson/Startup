@@ -1,17 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-// This will be replaced with a call to a third party restaurant API
-export function getRestaurants() {
-    return [
-        { name: "Cubby's", price: '$$$', cuisine: 'american', distance: '0.4 mi', address: '1496 n university ave', image: '/images/cubbys.jpg' },
-        { name: 'Tucanos', price: '$$$', cuisine: 'brazilian', distance: '1.2 mi', address: '4801 n university ave', image: '/images/tucanos.jpg' },
-        { name: 'Black Sheep Cafe', price: '$$', cuisine: 'southwest', distance: '0.8 mi', address: '19 n university ave', image: '/images/logo.png' },
-        { name: 'India Palace', price: '$$', cuisine: 'indian', distance: '0.6 mi', address: '98 w center st', image: '/images/logo.png' },
-        { name: 'Station 22', price: '$$', cuisine: 'american', distance: '0.7 mi', address: '22 w center st', image: '/images/logo.png' },
-    ];
-}
-
 function getFriends() {
     const players = JSON.parse(localStorage.getItem('players') || '["You", "Kate", "Conner", "Lily"]');
     return players
@@ -20,17 +9,35 @@ function getFriends() {
 }
 
 export function Vote() {
-    const [restaurants] = React.useState(getRestaurants());
+    const groupCode = localStorage.getItem('groupCode');
+    const [restaurants, setRestaurants] = React.useState([]);
     const [index, setIndex] = React.useState(0);
     const [yesVotes, setYesVotes] = React.useState([]);
     const [finished, setFinished] = React.useState(false);
+    const [allVoted, setAllVoted] = React.useState(false);
     const [friends, setFriends] = React.useState(getFriends());
+    const [error, setError] = React.useState('');
     const navigate = useNavigate();
 
     const restaurant = restaurants[index];
 
-    // This will be replaced with WebSocket messages from the other people voting
+    // GETS THE RESTAURANT LIST FROM THE SERVICE
     React.useEffect(() => {
+        fetch(`/api/group/${groupCode}/restaurants`)
+            .then((response) => response.json())
+            .then((list) => {
+                if (Array.isArray(list)) {
+                    setRestaurants(list);
+                } else {
+                    setError(list.msg);
+                }
+            });
+    }, []);
+
+    // FAKE FRIEND PROGRESS UNTIL THE WEBSOCKET
+    React.useEffect(() => {
+        if (restaurants.length === 0) return;
+
         const timer = setInterval(() => {
             setFriends((current) => {
                 const updated = current.map((friend) => ({ ...friend }));
@@ -44,17 +51,34 @@ export function Vote() {
         }, 1500);
 
         return () => clearInterval(timer);
-    }, []);
+    }, [restaurants]);
 
-    // When everyone is done every screen jumps to the results
+    // AFTER YOU VOTE, ASK THE SERVICE IF EVERYONE ELSE HAS TOO
+    React.useEffect(() => {
+        if (!finished) return;
+
+        async function checkVotes() {
+            const response = await fetch(`/api/group/${groupCode}/results`);
+            const results = await response.json();
+            if (results.voted >= results.playerCount) {
+                setAllVoted(true);
+            }
+        }
+
+        checkVotes();
+        const timer = setInterval(checkVotes, 2000);
+        return () => clearInterval(timer);
+    }, [finished]);
+
+    // EVERYONE IS DONE SO EVERY SCREEN GOES TO THE RESULTS
     React.useEffect(() => {
         const everyoneDone = friends.every((friend) => friend.progress >= restaurants.length);
-        if (finished && everyoneDone) {
+        if (finished && allVoted && everyoneDone) {
             navigate('/results');
         }
-    }, [finished, friends]);
+    }, [finished, allVoted, friends]);
 
-    function vote(yes) {
+    async function vote(yes) {
         let votes = yesVotes;
         if (yes) {
             votes = [...yesVotes, restaurant.name];
@@ -64,9 +88,21 @@ export function Vote() {
         if (index + 1 < restaurants.length) {
             setIndex(index + 1);
         } else {
-            localStorage.setItem('myVotes', JSON.stringify(votes));
+            await fetch(`/api/group/${groupCode}/vote`, {
+                method: 'POST',
+                body: JSON.stringify({ votes: votes }),
+                headers: { 'Content-Type': 'application/json' },
+            });
             setFinished(true);
         }
+    }
+
+    if (error) {
+        return <main className="vote"><p className="text-danger">{error}</p></main>;
+    }
+
+    if (!restaurant && !finished) {
+        return <main className="vote"><h3>Loading restaurants...</h3></main>;
     }
 
     return (
