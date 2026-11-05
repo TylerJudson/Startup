@@ -10,6 +10,15 @@ const authCookieName = 'token';
 let users = [];
 let groups = {};
 
+// SAME RESTAURANTS THE VOTE PAGE HAD HARD CODED
+const restaurants = [
+    { name: "Cubby's", price: '$$$', cuisine: 'american', distance: '0.4 mi', address: '1496 n university ave', image: '/images/cubbys.jpg' },
+    { name: 'Tucanos', price: '$$$', cuisine: 'brazilian', distance: '1.2 mi', address: '4801 n university ave', image: '/images/tucanos.jpg' },
+    { name: 'Black Sheep Cafe', price: '$$', cuisine: 'southwest', distance: '0.8 mi', address: '19 n university ave', image: '/images/logo.png' },
+    { name: 'India Palace', price: '$$', cuisine: 'indian', distance: '0.6 mi', address: '98 w center st', image: '/images/logo.png' },
+    { name: 'Station 22', price: '$$', cuisine: 'american', distance: '0.7 mi', address: '22 w center st', image: '/images/logo.png' },
+];
+
 // HAS TO BE PORT 4000 FOR THE STARTUP
 const port = process.argv.length > 2 ? process.argv[2] : 4000;
 
@@ -88,6 +97,7 @@ apiRouter.post('/group', verifyAuth, (req, res) => {
         members: [req.user.email],
         location: '',
         started: false,
+        votes: {},
     };
     groups[group.code] = group;
     res.send(group);
@@ -132,6 +142,46 @@ apiRouter.put('/group/:code/start', verifyAuth, (req, res) => {
         group.started = true;
         res.send(group);
     }
+});
+
+// EVERYONE IN THE GROUP GETS THE SAME LIST
+apiRouter.get('/group/:code/restaurants', verifyAuth, (req, res) => {
+    if (groups[req.params.code]) {
+        res.send(restaurants);
+    } else {
+        res.status(404).send({ msg: 'No group with that code' });
+    }
+});
+
+// SAVES THE NAMES YOU SAID YES TO
+apiRouter.post('/group/:code/vote', verifyAuth, (req, res) => {
+    const group = groups[req.params.code];
+    if (!group) {
+        res.status(404).send({ msg: 'No group with that code' });
+    } else if (!group.members.includes(req.user.email)) {
+        res.status(403).send({ msg: 'You are not in this group' });
+    } else {
+        group.votes[req.user.email] = req.body.votes || [];
+        res.send({ voted: Object.keys(group.votes).length, playerCount: group.members.length });
+    }
+});
+
+// ADDS UP EVERYONES YES VOTES, MOST VOTES FIRST
+apiRouter.get('/group/:code/results', verifyAuth, (req, res) => {
+    const group = groups[req.params.code];
+    if (!group) {
+        res.status(404).send({ msg: 'No group with that code' });
+        return;
+    }
+
+    const allVotes = Object.values(group.votes);
+    const totals = restaurants.map((restaurant) => {
+        const votes = allVotes.filter((yesList) => yesList.includes(restaurant.name)).length;
+        return { ...restaurant, votes: votes };
+    });
+    totals.sort((a, b) => b.votes - a.votes);
+
+    res.send({ totals: totals, voted: allVotes.length, playerCount: group.members.length });
 });
 
 app.use(function (err, req, res, next) {
