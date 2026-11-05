@@ -57,9 +57,27 @@ export function Waiting() {
         return () => clearInterval(timer);
     }, []);
 
-    // WILL USE THE BROWSER LOCATION AND A THIRD PARTY API
+    // BROWSER GIVES LAT AND LON, OPENSTREETMAP TURNS THEM INTO A CITY
     function useMyLocation() {
-        setLocation('Provo, UT');
+        setError('');
+        navigator.geolocation.getCurrentPosition(
+            async (position) => {
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+                const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+                if (!response.ok) {
+                    setError('Could not look up your city');
+                    return;
+                }
+
+                const place = await response.json();
+                const city = place.address.city || place.address.town || place.address.village;
+                // US-UT TURNS INTO UT
+                const state = place.address['ISO3166-2-lvl4'] ? place.address['ISO3166-2-lvl4'].split('-')[1] : place.address.state;
+                setLocation(`${city}, ${state}`);
+            },
+            () => setError('Could not get your location')
+        );
     }
 
     async function startVoting(e) {
@@ -89,10 +107,11 @@ export function Waiting() {
 
             {isHost && (
                 <div className="host-box">
-                    <span><b>Location:</b> {location || 'not set'}</span>
-                    <button className="btn btn-outline-primary" onClick={useMyLocation}>Use my Location</button>
-                    <label htmlFor="location">Location</label>
-                    <input className="form-control" type="text" id="location" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Enter Location" />
+                    <label htmlFor="location"><b>Location</b></label>
+                    <div className="input-group">
+                        <input className="form-control" type="text" id="location" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Enter Location" />
+                        <button className="btn btn-primary" type="button" onClick={useMyLocation}>Use my Location</button>
+                    </div>
                 </div>
             )}
 

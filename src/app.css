@@ -160,6 +160,13 @@ header a:hover {
     border-color: #a86c26;
 }
 
+/* BOOTSTRAP MAKES DISABLED AND CLICKED BUTTONS BLUE */
+.btn-primary:disabled,
+.btn-primary:active {
+    background-color: #c8873a;
+    border-color: #c8873a;
+}
+
 footer a {
     color: #a86c26;
 }
