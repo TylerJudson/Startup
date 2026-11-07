@@ -43,3 +43,9 @@
 - localStorage only holds strings so JSON.stringify / JSON.parse for arrays
 - useNavigate() to change pages from code instead of a link
 - {cond && <x/>} and {cond ? <a/> : <b/>} for showing stuff conditionally. list.map needs a key
+
+## service
+- two apps in one repo now. frontend at the root, backend in service/. each has its own package.json, npm install in the right folder or you get 502s
+- backend HAS to be port 4000. vite.config.js proxies /api to it during npm run dev
+- express.static(public) serves the build. catch all route sends index.html so refreshing /vote still works
+- app.use(express.json()) or req.body is undefined
