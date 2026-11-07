@@ -228,3 +228,40 @@ For this deliverable I did the following.
       your friends' progress. useEffect runs the setInterval timers on the waiting
       and vote pages (and clears them when you leave), and watches for everyone to
       be done voting so it can jump to the results.
+
+## Service deliverable
+
+For this deliverable I did the following.
+
+- [x] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits)
+- [x] **Node.js/Express HTTP service** - service/index.js is an Express app on port
+      4000 with its own package.json (express, cookie-parser, bcryptjs, uuid). All the
+      endpoints are on an /api router. Users and groups are kept in memory for now.
+- [x] **Static middleware for frontend** - express.static('public') serves the Vite
+      build. Any path that isn't an endpoint gets index.html so React Router still
+      works when you refresh on a page like /vote. vite.config.js proxies /api to
+      port 4000 when I run npm run dev.
+- [x] **Calls to third party endpoints** - "Use my Location" on the waiting page gets
+      your latitude and longitude from the browser, then fetches OpenStreetMap's
+      Nominatim reverse geocoding API to turn them into a city and state like
+      "Provo, UT". If you block location or the lookup fails it shows an error.
+- [x] **Backend service endpoints** - Groups: POST /api/group makes a group with a
+      4 letter code and you as the host, POST /api/group/:code/join joins it, GET
+      /api/group/:code gives who joined, and PUT /api/group/:code/start lets only the
+      host start the voting with a location. Voting: GET /api/group/:code/restaurants
+      gives everyone the same list, POST /api/group/:code/vote saves your yes votes,
+      and GET /api/group/:code/results adds up everyone's votes most first.
+- [x] **Frontend calls service endpoints** - Login and Create call the auth
+      endpoints. Start makes or joins a group. Waiting asks the service who joined
+      every 2 seconds and everyone moves to Vote when the host starts. Vote gets the
+      restaurants from the service, sends your votes, and waits until everyone has
+      voted. Results shows the real totals from the service. The fake friends are
+      still there until the WebSocket deliverable.
+- [x] **Supports registration, login, logout, and restricted endpoint** - POST
+      /api/auth/create registers, PUT /api/auth/login logs in, and DELETE
+      /api/auth/logout logs out. The token is a uuid in an httpOnly cookie. Every
+      group and vote endpoint goes through verifyAuth, so without a valid token you
+      get a 401. GET /api/user/me is restricted too.
+- [x] **Uses BCrypt to hash passwords** - Passwords are hashed with bcrypt.hash
+      (10 rounds) when you register and checked with bcrypt.compare when you log in.
+      The plain password is never saved.
