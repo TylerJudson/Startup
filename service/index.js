@@ -7,9 +7,6 @@ const app = express();
 
 const authCookieName = 'token';
 
-// USERS ARE IN MONGO NOW, GROUPS ARE STILL IN MEMORY
-let groups = {};
-
 // SAME RESTAURANTS THE VOTE PAGE HAD HARD CODED
 const restaurants = [
     { name: "Cubby's", price: '$$$', cuisine: 'american', distance: '0.4 mi', address: '1496 n university ave', image: '/images/cubbys.jpg' },
@@ -93,37 +90,34 @@ apiRouter.get('/user/me', verifyAuth, (req, res) => {
 });
 
 // START A GROUP, YOU ARE THE HOST
-apiRouter.post('/group', verifyAuth, (req, res) => {
+apiRouter.post('/group', verifyAuth, async (req, res) => {
     const group = {
-        code: makeCode(),
+        code: await makeCode(),
         host: req.user.email,
         members: [req.user.email],
         location: '',
         started: false,
-        votes: {},
     };
-    groups[group.code] = group;
+    await DB.addGroup(group);
     res.send(group);
 });
 
 // JOIN A GROUP WITH THE CODE
-apiRouter.post('/group/:code/join', verifyAuth, (req, res) => {
-    const group = groups[req.params.code];
+apiRouter.post('/group/:code/join', verifyAuth, async (req, res) => {
+    const group = await DB.getGroup(req.params.code);
     if (!group) {
         res.status(404).send({ msg: 'No group with that code' });
     } else if (group.started) {
         res.status(409).send({ msg: 'That group already started voting' });
     } else {
-        if (!group.members.includes(req.user.email)) {
-            group.members.push(req.user.email);
-        }
-        res.send(group);
+        await DB.addMember(req.params.code, req.user.email);
+        res.send(await DB.getGroup(req.params.code));
     }
 });
 
 // THE WAITING PAGE CHECKS THIS FOR WHO JOINED
-apiRouter.get('/group/:code', verifyAuth, (req, res) => {
-    const group = groups[req.params.code];
+apiRouter.get('/group/:code', verifyAuth, async (req, res) => {
+    const group = await DB.getGroup(req.params.code);
     if (group) {
         res.send(group);
     } else {
@@ -132,8 +126,8 @@ apiRouter.get('/group/:code', verifyAuth, (req, res) => {
 });
 
 // ONLY THE HOST CAN START THE VOTING
-apiRouter.put('/group/:code/start', verifyAuth, (req, res) => {
-    const group = groups[req.params.code];
+apiRouter.put('/group/:code/start', verifyAuth, async (req, res) => {
+    const group = await DB.getGroup(req.params.code);
     if (!group) {
         res.status(404).send({ msg: 'No group with that code' });
     } else if (group.host !== req.user.email) {
@@ -141,15 +135,14 @@ apiRouter.put('/group/:code/start', verifyAuth, (req, res) => {
     } else if (!req.body.location) {
         res.status(400).send({ msg: 'Missing location' });
     } else {
-        group.location = req.body.location;
-        group.started = true;
-        res.send(group);
+        await DB.startGroup(req.params.code, req.body.location);
+        res.send(await DB.getGroup(req.params.code));
     }
 });
 
 // EVERYONE IN THE GROUP GETS THE SAME LIST
-apiRouter.get('/group/:code/restaurants', verifyAuth, (req, res) => {
-    if (groups[req.params.code]) {
+apiRouter.get('/group/:code/restaurants', verifyAuth, async (req, res) => {
+    if (await DB.getGroup(req.params.code)) {
         res.send(restaurants);
     } else {
         res.status(404).send({ msg: 'No group with that code' });
@@ -157,29 +150,30 @@ apiRouter.get('/group/:code/restaurants', verifyAuth, (req, res) => {
 });
 
 // SAVES THE NAMES YOU SAID YES TO
-apiRouter.post('/group/:code/vote', verifyAuth, (req, res) => {
-    const group = groups[req.params.code];
+apiRouter.post('/group/:code/vote', verifyAuth, async (req, res) => {
+    const group = await DB.getGroup(req.params.code);
     if (!group) {
         res.status(404).send({ msg: 'No group with that code' });
     } else if (!group.members.includes(req.user.email)) {
         res.status(403).send({ msg: 'You are not in this group' });
     } else {
-        group.votes[req.user.email] = req.body.votes || [];
-        res.send({ voted: Object.keys(group.votes).length, playerCount: group.members.length });
+        await DB.saveVote(req.params.code, req.user.email, req.body.votes || []);
+        const allVotes = await DB.getVotes(req.params.code);
+        res.send({ voted: allVotes.length, playerCount: group.members.length });
     }
 });
 
 // ADDS UP EVERYONES YES VOTES, MOST VOTES FIRST
-apiRouter.get('/group/:code/results', verifyAuth, (req, res) => {
-    const group = groups[req.params.code];
+apiRouter.get('/group/:code/results', verifyAuth, async (req, res) => {
+    const group = await DB.getGroup(req.params.code);
     if (!group) {
         res.status(404).send({ msg: 'No group with that code' });
         return;
     }
 
-    const allVotes = Object.values(group.votes);
+    const allVotes = await DB.getVotes(req.params.code);
     const totals = restaurants.map((restaurant) => {
-        const votes = allVotes.filter((yesList) => yesList.includes(restaurant.name)).length;
+        const votes = allVotes.filter((vote) => vote.yesVotes.includes(restaurant.name)).length;
         return { ...restaurant, votes: votes };
     });
     totals.sort((a, b) => b.votes - a.votes);
@@ -219,7 +213,7 @@ async function findUser(field, value) {
 }
 
 // NO I OR O SO PEOPLE DONT MIX THEM UP WITH 1 AND 0
-function makeCode() {
+async function makeCode() {
     const letters = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
     let code = '';
     do {
@@ -227,7 +221,7 @@ function makeCode() {
         for (let i = 0; i < 4; i++) {
             code += letters[Math.floor(Math.random() * letters.length)];
         }
-    } while (groups[code]);
+    } while (await DB.getGroup(code));
     return code;
 }
 
