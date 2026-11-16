@@ -277,7 +277,10 @@ For this deliverable I did the following.
       $addToSet so you can only be in the members list once. Votes are their own
       collection, one document per person per group, saved with replaceOne + upsert, so
       two people finishing at the same time cant overwrite each other. The results
-      endpoint adds up the vote documents for the group. See service/database.js.
+      endpoint adds up the vote documents for the group. The restaurants are in a
+      restaurant collection too, filled the first time the service starts, so nothing
+      the app uses is kept in server memory anymore. Only members of a group can read
+      it, its restaurants, or its results. See service/database.js.
 - [x] **Stores credentials in MongoDB** - Users are in the user collection with their
       email, bcrypt password hash, and auth token. Register inserts the user, login
       checks the hash and saves a new token, every restricted endpoint looks the token
