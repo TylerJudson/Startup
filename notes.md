@@ -49,3 +49,7 @@
 - backend HAS to be port 4000. vite.config.js proxies /api to it during npm run dev
 - express.static(public) serves the build. catch all route sends index.html so refreshing /vote still works
 - app.use(express.json()) or req.body is undefined
+
+## db
+- dbConfig.json has hostname, userName, password. in .gitignore so it never goes on github. deployService.sh copies it to the server with the other service/*.json files
+- updateOne with $set only changes the fields you give it. it wont delete a field you just removed from the object, set it to null instead (logout bug in simon)
