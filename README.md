@@ -265,3 +265,22 @@ For this deliverable I did the following.
 - [x] **Uses BCrypt to hash passwords** - Passwords are hashed with bcrypt.hash
       (10 rounds) when you register and checked with bcrypt.compare when you log in.
       The plain password is never saved.
+
+## DB Deliverable
+
+For this deliverable I did the following.
+
+- [x] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits)
+- [x] **Stores application data in MongoDB** - Groups and votes are in MongoDB Atlas now
+      instead of in memory, so they survive the server restarting. The group collection
+      holds the code, host, members, location, and whether voting started. Joining uses
+      $addToSet so you can only be in the members list once. Votes are their own
+      collection, one document per person per group, saved with replaceOne + upsert, so
+      two people finishing at the same time cant overwrite each other. The results
+      endpoint adds up the vote documents for the group. See service/database.js.
+- [x] **Stores credentials in MongoDB** - Users are in the user collection with their
+      email, bcrypt password hash, and auth token. Register inserts the user, login
+      checks the hash and saves a new token, every restricted endpoint looks the token
+      up in MongoDB, and logout sets the token to null so the old cookie stops working.
+      The database login is in dbConfig.json, which is in .gitignore so it never goes
+      to GitHub.
