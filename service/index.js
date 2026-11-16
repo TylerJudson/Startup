@@ -51,6 +51,12 @@ apiRouter.post('/auth/create', async (req, res) => {
 
 // LOGIN
 apiRouter.put('/auth/login', async (req, res) => {
+    // BCRYPT THROWS IF THE PASSWORD IS MISSING SO CHECK FIRST
+    if (!req.body.email || !req.body.password) {
+        res.status(400).send({ msg: 'Missing email or password' });
+        return;
+    }
+
     const user = await findUser('email', req.body.email);
     if (user && (await bcrypt.compare(req.body.password, user.password))) {
         user.token = uuid.v4();
