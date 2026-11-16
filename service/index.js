@@ -125,10 +125,12 @@ apiRouter.post('/group/:code/join', verifyAuth, async (req, res) => {
 // THE WAITING PAGE CHECKS THIS FOR WHO JOINED
 apiRouter.get('/group/:code', verifyAuth, async (req, res) => {
     const group = await DB.getGroup(req.params.code);
-    if (group) {
-        res.send(group);
-    } else {
+    if (!group) {
         res.status(404).send({ msg: 'No group with that code' });
+    } else if (!group.members.includes(req.user.email)) {
+        res.status(403).send({ msg: 'You are not in this group' });
+    } else {
+        res.send(group);
     }
 });
 
@@ -149,10 +151,13 @@ apiRouter.put('/group/:code/start', verifyAuth, async (req, res) => {
 
 // EVERYONE IN THE GROUP GETS THE SAME LIST
 apiRouter.get('/group/:code/restaurants', verifyAuth, async (req, res) => {
-    if (await DB.getGroup(req.params.code)) {
-        res.send(await DB.getRestaurants());
-    } else {
+    const group = await DB.getGroup(req.params.code);
+    if (!group) {
         res.status(404).send({ msg: 'No group with that code' });
+    } else if (!group.members.includes(req.user.email)) {
+        res.status(403).send({ msg: 'You are not in this group' });
+    } else {
+        res.send(await DB.getRestaurants());
     }
 });
 
@@ -175,6 +180,11 @@ apiRouter.get('/group/:code/results', verifyAuth, async (req, res) => {
     const group = await DB.getGroup(req.params.code);
     if (!group) {
         res.status(404).send({ msg: 'No group with that code' });
+        return;
+    }
+    // ONLY PEOPLE IN THE GROUP CAN SEE ITS RESULTS
+    if (!group.members.includes(req.user.email)) {
+        res.status(403).send({ msg: 'You are not in this group' });
         return;
     }
 
