@@ -9,6 +9,7 @@ const userCollection = db.collection('user');
 const groupCollection = db.collection('group');
 // VOTES GET THEIR OWN COLLECTION SO TWO PEOPLE VOTING AT ONCE DONT OVERWRITE EACH OTHER
 const voteCollection = db.collection('vote');
+const restaurantCollection = db.collection('restaurant');
 
 // CHECKS THE CONNECTION WHEN THE SERVICE STARTS
 (async function testConnection() {
@@ -63,6 +64,18 @@ function getVotes(code) {
     return voteCollection.find({ code: code }).toArray();
 }
 
+// ONLY ADDS THEM IF THE COLLECTION IS EMPTY SO RESTARTING DOESNT MAKE DOUBLES
+async function seedRestaurants(restaurants) {
+    if ((await restaurantCollection.countDocuments()) === 0) {
+        await restaurantCollection.insertMany(restaurants);
+    }
+}
+
+// LEAVES OUT _ID SINCE THE FRONTEND DOESNT NEED IT
+function getRestaurants() {
+    return restaurantCollection.find({}, { projection: { _id: 0 } }).toArray();
+}
+
 module.exports = {
     getUser,
     getUserByToken,
@@ -74,4 +87,6 @@ module.exports = {
     startGroup,
     saveVote,
     getVotes,
+    seedRestaurants,
+    getRestaurants,
 };

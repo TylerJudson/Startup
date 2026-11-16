@@ -7,14 +7,15 @@ const app = express();
 
 const authCookieName = 'token';
 
-// SAME RESTAURANTS THE VOTE PAGE HAD HARD CODED
-const restaurants = [
+// ONLY USED TO FILL THE RESTAURANT COLLECTION THE FIRST TIME, AFTER THAT THEY COME FROM MONGO
+const startingRestaurants = [
     { name: "Cubby's", price: '$$$', cuisine: 'american', distance: '0.4 mi', address: '1496 n university ave', image: '/images/cubbys.jpg' },
     { name: 'Tucanos', price: '$$$', cuisine: 'brazilian', distance: '1.2 mi', address: '4801 n university ave', image: '/images/tucanos.jpg' },
     { name: 'Black Sheep Cafe', price: '$$', cuisine: 'southwest', distance: '0.8 mi', address: '19 n university ave', image: '/images/logo.png' },
     { name: 'India Palace', price: '$$', cuisine: 'indian', distance: '0.6 mi', address: '98 w center st', image: '/images/logo.png' },
     { name: 'Station 22', price: '$$', cuisine: 'american', distance: '0.7 mi', address: '22 w center st', image: '/images/logo.png' },
 ];
+DB.seedRestaurants(startingRestaurants);
 
 // HAS TO BE PORT 4000 FOR THE STARTUP
 const port = process.argv.length > 2 ? process.argv[2] : 4000;
@@ -143,7 +144,7 @@ apiRouter.put('/group/:code/start', verifyAuth, async (req, res) => {
 // EVERYONE IN THE GROUP GETS THE SAME LIST
 apiRouter.get('/group/:code/restaurants', verifyAuth, async (req, res) => {
     if (await DB.getGroup(req.params.code)) {
-        res.send(restaurants);
+        res.send(await DB.getRestaurants());
     } else {
         res.status(404).send({ msg: 'No group with that code' });
     }
@@ -172,6 +173,7 @@ apiRouter.get('/group/:code/results', verifyAuth, async (req, res) => {
     }
 
     const allVotes = await DB.getVotes(req.params.code);
+    const restaurants = await DB.getRestaurants();
     const totals = restaurants.map((restaurant) => {
         const votes = allVotes.filter((vote) => vote.yesVotes.includes(restaurant.name)).length;
         return { ...restaurant, votes: votes };
