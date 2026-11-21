@@ -177,7 +177,10 @@ apiRouter.post('/group/:code/vote', verifyAuth, async (req, res) => {
     } else {
         await DB.saveVote(req.params.code, req.user.email, req.body.votes || []);
         const allVotes = await DB.getVotes(req.params.code);
-        res.send({ voted: allVotes.length, playerCount: group.members.length });
+        const progress = { voted: allVotes.length, playerCount: group.members.length };
+        // TELLS EVERYONE HOW MANY PEOPLE HAVE VOTED SO FAR
+        sendToGroup(req.params.code, { type: 'voted', ...progress });
+        res.send(progress);
     }
 });
 
