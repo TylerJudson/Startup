@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const express = require('express');
 const uuid = require('uuid');
 const DB = require('./database.js');
-const { peerProxy } = require('./peerProxy.js');
+const { peerProxy, sendToGroup } = require('./peerProxy.js');
 const app = express();
 
 const authCookieName = 'token';
@@ -119,7 +119,10 @@ apiRouter.post('/group/:code/join', verifyAuth, async (req, res) => {
         res.status(409).send({ msg: 'That group already started voting' });
     } else {
         await DB.addMember(req.params.code, req.user.email);
-        res.send(await DB.getGroup(req.params.code));
+        const updatedGroup = await DB.getGroup(req.params.code);
+        // TELLS EVERYONE ALREADY WAITING THAT SOMEONE NEW JOINED
+        sendToGroup(req.params.code, { type: 'members', members: updatedGroup.members });
+        res.send(updatedGroup);
     }
 });
 
@@ -146,6 +149,8 @@ apiRouter.put('/group/:code/start', verifyAuth, async (req, res) => {
         res.status(400).send({ msg: 'Missing location' });
     } else {
         await DB.startGroup(req.params.code, req.body.location);
+        // TELLS EVERYONE WAITING TO GO TO THE VOTE PAGE
+        sendToGroup(req.params.code, { type: 'started', location: req.body.location });
         res.send(await DB.getGroup(req.params.code));
     }
 });
